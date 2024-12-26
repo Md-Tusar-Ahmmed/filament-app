@@ -79,6 +79,7 @@ class PostResource extends Resource
                             ->label('Category')
                             ->relationship('category', 'name')
                             ->searchable()
+                            ->required()
                             ->preload()
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')->required()
@@ -109,6 +110,7 @@ class PostResource extends Resource
 
                         Select::make('tags_id')
                             ->relationship('tags', 'tags')
+                            ->required()
                             ->multiple()
                             ->preload()
                             ->createOptionForm([
