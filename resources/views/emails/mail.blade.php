@@ -6,6 +6,8 @@
     <title></title>
 </head>
 <body>
-    {{$msg}}
+    
+{!! str($msg)->markdown()->sanitizeHtml() !!}
+
 </body>
 </html>
