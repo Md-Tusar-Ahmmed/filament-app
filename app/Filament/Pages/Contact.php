@@ -65,7 +65,7 @@ class Contact extends Page implements HasForms
         $subject = $this->subject;
         $msg = $this->msg;
 
-        Mail::to($toEmail)->send(new contactMail($msg, $subject));
+        Mail::to($toEmail)->queue(new contactMail($msg, $subject));
 
         $contact = new ModelsContact();
         $contact->email = $toEmail;
