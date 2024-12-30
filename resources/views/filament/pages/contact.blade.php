@@ -4,7 +4,9 @@
 
         {{$this->form}}
 
-        <x-filament::button type="submit" class="mt-4" >Send Message</x-filament::button>
+        <div class="mt-4">
+            <x-filament::button type="submit"   >Send Message</x-filament::button>
+        </div>
 
     </form>
 

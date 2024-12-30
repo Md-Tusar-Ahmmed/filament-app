@@ -7,9 +7,11 @@ use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Category;
 use App\Models\Post;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -49,11 +51,15 @@ class PostResource extends Resource
         return static::getModel()::count();
     }
 
+    
+    
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+
                 Section::make('Post Details')
                     ->collapsible()
                     ->schema([
@@ -64,7 +70,7 @@ class PostResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-
+                        
                         TextInput::make('title')->required()
                             ->live(debounce: true)
                             ->afterStateUpdated(
@@ -126,6 +132,8 @@ class PostResource extends Resource
             ])->columns(3);
     }
 
+    
+
     public static function table(Table $table): Table
     {
         return $table
@@ -171,6 +179,7 @@ class PostResource extends Resource
                     ->sortable()
                     ->toggleable(),
             ])
+            
             ->filters([
                 TernaryFilter::make('published'),
                 SelectFilter::make('category_id')
@@ -178,6 +187,36 @@ class PostResource extends Resource
                     ->searchable()
                     ->preload(),
                 TrashedFilter::make(),
+
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->placeholder(fn ($state): string => now()->format('M d, Y')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Order from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Order until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+ 
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
