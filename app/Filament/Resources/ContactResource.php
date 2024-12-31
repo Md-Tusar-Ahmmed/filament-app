@@ -5,14 +5,18 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ContactResource\Pages;
 use App\Filament\Resources\ContactResource\RelationManagers;
 use App\Models\Contact;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use League\CommonMark\CommonMarkConverter;
 
 class ContactResource extends Resource
 {
@@ -49,10 +53,28 @@ class ContactResource extends Resource
                 //
             ])
             ->actions([
-                //
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 //
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        $markdownConverter = new CommonMarkConverter();
+
+        return $infolist
+            ->schema([
+                TextEntry::make('email')
+                    ->label('Email:')
+                    ->columnSpanFull(),
+                TextEntry::make('subject')
+                    ->label('Subject:')
+                    ->columnSpanFull(),
+                TextEntry::make('msg')
+                    ->label('Message:')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -67,7 +89,9 @@ class ContactResource extends Resource
     {
         return [
             'index' => Pages\ListContacts::route('/'),
+            'view' => Pages\ViewUser::route('/{record}'),
         ];
     }
     
 }
+

@@ -4,16 +4,9 @@ namespace App\Filament\Resources\ContactResource\Pages;
 
 use App\Filament\Resources\ContactResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListContacts extends ListRecords
+class ViewUser extends ViewRecord
 {
     protected static string $resource = ContactResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            
-        ];
-    }
 }
